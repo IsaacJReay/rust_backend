@@ -18,9 +18,9 @@ pub fn set_status(newstatus: bool) {
     STATUSVAR.store(newstatus, Ordering::Relaxed);
 }
 
-pub fn get_status() -> bool {
-    STATUSVAR.load(Ordering::Relaxed)
-}
+// pub fn get_status() -> bool {
+//     STATUSVAR.load(Ordering::Relaxed)
+// }
 
 #[get("/")]
 pub async fn root() -> impl Responder {
@@ -62,7 +62,7 @@ pub async fn pam_login(logindata: Data<InputUser>) -> Result<(), Error> {
             .open_session()
             .is_ok() {
         set_status(true);
-        // env::set_var("RUST_TEST", format!("{}", get_status()));
+        env::set_var("RUST_TEST", format!("{}", get_status()));
         Ok(())
     }
     else{
