@@ -1,5 +1,5 @@
 [package]
-name = "hello-world"
+name = "rust_backend"
 version = "0.1.0"
 authors = ["IsaacJReay <isaacjacksonreay@gmail.com>"]
 edition = "2018"
@@ -7,5 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "3"
+actix-web = "*"
 dotenv_codegen = "0.15.*"
+pam = "0.7.*"
+jsonrpc-v2 = "*"
+serde = {version = "*", features = ["derive"]}
+serde_json = "*"
+env_logger = "0.8.*"
