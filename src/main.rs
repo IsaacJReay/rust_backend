@@ -1,33 +1,29 @@
-use actix_web::http::{StatusCode};
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
-
+mod funct;
 
 #[macro_use]
 extern crate dotenv_codegen;
 
-
-#[get("/")]
-async fn root() -> impl Responder {
-    HttpResponse::build(StatusCode::OK)
-        .content_type("text/html; charset=utf-8")
-        .body(include_str!("../sites/404.html"))
-}
-
-
-async fn privateapi() -> impl Responder {
-    HttpResponse::build(StatusCode::OK)
-        .content_type("text/html; charset=utf-8")
-        .body(include_str!("../sites/GraphiQL.html"))
-}
+use actix_web::{web, guard, App, HttpServer};
+use jsonrpc_v2::Server;
 
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
-    let server = HttpServer::new(|| {
+    let loginrpc = Server::new()
+        .with_method("message", funct::pam_login)
+        .finish();
+
+    let server = HttpServer::new(move || {
+        let loginrpc = loginrpc.clone();
         App::new()
-            .service(root)
-            .route("/private/api", web::get().to(privateapi))
+            .service(funct::root)
+            .route("/private/api", web::get().to(funct::privateapi))
+            .service(
+                web::service("/private/api/login")
+                    .guard(guard::Post())
+                    .finish(loginrpc.into_web_service()),
+            )
     })
     .bind(&dotenv!("IPADDR"))?
     .run();
